@@ -62,6 +62,10 @@ def calculate_pid(dir):
 		protein = protein.split(':')[0]
 		pid = float(pid)
 		f.close()
+		## clean up
+		os.system("rm %s" % filepath)
+		os.system("rm %s" % filepath_out)
+		os.system("rm %s" % filepath_pidmtr)
 		## store max score
 		if protein not in pids_dict.keys():
 			pids_dict[protein] = []

@@ -15,9 +15,9 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 	unzip SQLArchive_cisbp_1.02.zip
 	unzip cisbp_1.02.tfs.zip
 	unzip cisbp_1.02.proteins.zip
-	mysql -u username -p
-	mysql> create database cisbp_1_02;
-	mysql> exit;
+	unzip cisbp_1.02.domains.zip
+	unzip cisbp_1.02.prot_features.zip
+	echo "create database `cisbp_1_02`" | mysql -u username -p
 	mysql -u username -p cisbp_1_02 < cisbp_1.02.tfs.sql
 	mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
 	```
