@@ -2,14 +2,14 @@
 
 This module queries the amino acid sequences of the transcription factors (TFs) of interest, searches for the corresponding DNA binding domains (DBDs), aligns each DBD to another, and calculates the percent identity between the algined DBD pair.
 
-### REQUIRED PACKAGES
+### REQUIREMENT
 
 1. Download and install bedtools as instructed, http://bedtools.readthedocs.io/en/latest/content/installation.html.
 
 2. Downaload and install Clustal Omega as instructed, http://www.clustal.org/omega/.
 
 
-### CONFIGURE DATABASE [OPTIONAL]
+### DATABASE [OPTIONAL]
 
 Download and configure CIS-BP database. If you have the amino acid sequences of the TFs from an alternative resource, skip this step.
 	
@@ -53,12 +53,14 @@ Download and configure CIS-BP database. If you have the amino acid sequences of 
 	bedtools getfasta -fi DATA/<species>.tf_aa_seq.fasta -bed DATA/<species>.dbd_hitdata.bed -fo DATA/<species>.dbd.fasta
 	```
 
-4. Calculate the pairwised DBD percent identity between two proteins. The maximal percent identity of all DBD-DBD pairs is the score of each protein-protein pair. If SLURM is available for protein-level parallelization, run
+4. Calculate the pairwised DBD percent identity between two proteins. The maximal percent identity of all DBD-DBD pairs is the score of each protein-protein pair. 
+
+	If SLURM is available for protein-level parallelization, run
 
 	```
 	sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid_parallel.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
 	```
-
+	
 	Otherwise, run serial processing
 
 	```
