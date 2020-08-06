@@ -13,17 +13,17 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 
 Download and configure CIS-BP database. If you have the amino acid sequences of the TFs from an alternative resource, skip this step.
 	
-	```
-	wget http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/SQLDumps/SQLArchive_cisbp_1.02.zip
-	unzip SQLArchive_cisbp_1.02.zip
-	unzip cisbp_1.02.tfs.zip
-	unzip cisbp_1.02.proteins.zip
-	unzip cisbp_1.02.domains.zip
-	unzip cisbp_1.02.prot_features.zip
-	echo "create database `cisbp_1_02`" | mysql -u username -p
-	mysql -u username -p cisbp_1_02 < cisbp_1.02.tfs.sql
-	mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
-	```
+```
+wget http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/SQLDumps/SQLArchive_cisbp_1.02.zip
+unzip SQLArchive_cisbp_1.02.zip
+unzip cisbp_1.02.tfs.zip
+unzip cisbp_1.02.proteins.zip
+unzip cisbp_1.02.domains.zip
+unzip cisbp_1.02.prot_features.zip
+echo "create database `cisbp_1_02`" | mysql -u username -p
+mysql -u username -p cisbp_1_02 < cisbp_1.02.tfs.sql
+mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
+```
 
 ### USAGE
 
