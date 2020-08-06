@@ -9,7 +9,7 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 2. Downaload and install Clustal Omega as instructed, http://www.clustal.org/omega/.
 
 
-### CONFIGURE CIS-BP DATABASE [OPTIONAL]
+### CONFIGURE DATABASE [OPTIONAL]
 
 Download and configure CIS-BP database. If you have the amino acid sequences of the TFs from an alternative resource, skip this step.
 	
@@ -59,7 +59,7 @@ Download and configure CIS-BP database. If you have the amino acid sequences of 
 	sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid_parallel.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
 	```
 
-Otherwise, run serial processing
+	Otherwise, run serial processing
 
 	```
 	bash CODE/run_compt_dbd_pid_serial.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
