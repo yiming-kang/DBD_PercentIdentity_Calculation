@@ -30,10 +30,11 @@ def generate_paired_fasta(query, filepath_fasta, dir):
 	f.close()
 
 	## get indices of query protein and other proteins to pair
-	query_indx = [i for i in range(len(lines)/2) if lines[i*2].strip().strip('>').split(':')[0] == query]
+	query_indx = [i for i in range(int(len(lines) / 2)) \
+		if lines[i * 2].strip().strip('>').split(':')[0] == query]
 	if len(query_indx) == 0:
 		sys.exit("No query %s found in fasta file.\n" % query)
-	pair_indx = sorted(set(range(len(lines)/2)) - set(query_indx))
+	pair_indx = sorted(set(range(int(len(lines) / 2))) - set(query_indx))
 
 	for i in query_indx:
 		## parse a protein of interest
@@ -71,7 +72,7 @@ def calculate_pid(dir):
 			pids_dict[protein] = []
 		pids_dict[protein].append(pid)
 	## take max pid of each dbd
-	for protein, pids in pids_dict.iteritems():
+	for protein, pids in pids_dict.items():
 		pids_dict[protein] = max(pids)
 	return pids_dict
 

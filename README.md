@@ -2,13 +2,16 @@
 
 This module queries the amino acid sequences of the transcription factors (TFs) of interest, searches for the corresponding DNA binding domains (DBDs), aligns each DBD to another, and calculates the percent identity between the algined DBD pair.
 
-### INSTALLATION INSTRUCTIONS
+### REQUIRED PACKAGES
 
 1. Download and install bedtools as instructed, http://bedtools.readthedocs.io/en/latest/content/installation.html.
 
 2. Downaload and install Clustal Omega as instructed, http://www.clustal.org/omega/.
 
-3. Optional: download and install CISBP database. If you have the amino acid sequences of the TFs from an alternative resources, skip this step.
+
+### CONFIGURE CIS-BP DATABASE [OPTIONAL]
+
+Download and configure CIS-BP database. If you have the amino acid sequences of the TFs from an alternative resource, skip this step.
 	
 	```
 	wget http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/SQLDumps/SQLArchive_cisbp_1.02.zip
@@ -22,7 +25,7 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 	mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
 	```
 
-### EXAMPLE USAGE
+### USAGE
 
 1. Configure tool dependencies
 	
@@ -50,10 +53,16 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 	bedtools getfasta -fi DATA/<species>.tf_aa_seq.fasta -bed DATA/<species>.dbd_hitdata.bed -fo DATA/<species>.dbd.fasta
 	```
 
-4. Calculate the pairwised DBD percent identity between two proteins. The maximal percent identity of all DBD-DBD pairs is the score of each protein-protein pair. 
+4. Calculate the pairwised DBD percent identity between two proteins. The maximal percent identity of all DBD-DBD pairs is the score of each protein-protein pair. If SLURM is available for protein-level parallelization, run
 
 	```
-	sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
+	sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid_parallel.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
+	```
+
+Otherwise, run serial processing
+
+	```
+	bash CODE/run_compt_dbd_pid_serial.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
 	```
 
 5. If there exists an mapping from protein names to TF-encoding gene names, execute the following. It also handles the case the multi-protein to TF mapping by taking the maximal percent identity score. It saves new TF score files and purges the protein score files.
@@ -66,15 +75,15 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 
 FILENAME | DESCRITPION
 --- | ---
-DATA/<species>.tf_aa_seq.fasta | TF amino acid sequences. If there are multiple protein systematic names mapped to a gene that encodes the corresponding TF, the identifier of each sequnece is the protein systematic name. For example, FBpp0070062 and FBpp0305207 are mapped to FBgn0040372 according to FlyBase. Otherwise, the identifier is the gene systematic name.
-DATA/<species>.protein_list.txt | The list of the sequence identifiers as described above. 
-DATA/<species>.protein_tf_conversion.txt | Optional: the table of name conversion between protein sysmenatic names and gene systematic names. First column corresponds to the protein, and second column corresponds to the gene. 
+DATA/< species >.tf_aa_seq.fasta | TF amino acid sequences. If there are multiple protein systematic names mapped to a gene that encodes the corresponding TF, the identifier of each sequnece is the protein systematic name. For example, FBpp0070062 and FBpp0305207 are mapped to FBgn0040372 according to FlyBase. Otherwise, the identifier is the gene systematic name.
+DATA/< species >.protein_list.txt | The list of the sequence identifiers as described above. 
+DATA/< species >.protein_tf_conversion.txt | Optional: the table of name conversion between protein sysmenatic names and gene systematic names. First column corresponds to the protein, and second column corresponds to the gene. 
 
 ### DESCRIPTION OF OUTPUT FILES
 
 DIRECTORY | DESCRITPION
 --- | ---
-DATA/<output_dirpath>/ | The directory that contains the percent identifies (PIDs) between each pair of TFs in the genome. Each file titled with a TF's systematic name contains two columns: first column is the TFs that this TF are paired with, and second column is the respective PIDs.
+DATA/< output_dirpath >/ | The directory that contains the percent identifies (PIDs) between each pair of TFs in the genome. Each file titled with a TF's systematic name contains two columns: first column is the TFs that this TF are paired with, and second column is the respective PIDs.
 
 ### REFERENCES
 
