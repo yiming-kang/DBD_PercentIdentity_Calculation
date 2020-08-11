@@ -14,22 +14,22 @@ This module queries the amino acid sequences of the transcription factors (TFs) 
 Download and configure CIS-BP database. If you have the amino acid sequences of the TFs from an alternative resource, skip this step.
 	
 ```
-wget http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/SQLDumps/SQLArchive_cisbp_1.02.zip
-unzip SQLArchive_cisbp_1.02.zip
-unzip cisbp_1.02.tfs.zip
-unzip cisbp_1.02.proteins.zip
-unzip cisbp_1.02.domains.zip
-unzip cisbp_1.02.prot_features.zip
-echo "create database `cisbp_1_02`" | mysql -u username -p
-mysql -u username -p cisbp_1_02 < cisbp_1.02.tfs.sql
-mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
+$ wget http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/SQLDumps/SQLArchive_cisbp_1.02.zip
+$ unzip SQLArchive_cisbp_1.02.zip
+$ unzip cisbp_1.02.tfs.zip
+$ unzip cisbp_1.02.proteins.zip
+$ unzip cisbp_1.02.domains.zip
+$ unzip cisbp_1.02.prot_features.zip
+$ echo "create database `cisbp_1_02`" | mysql -u username -p
+$ mysql -u username -p cisbp_1_02 < cisbp_1.02.tfs.sql
+$ mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
 ```
 
 ### USAGE
 
-1. Configure tool dependencies
+1. Configure tool dependencies in `~/.profile`
 	
-	```
+	```bash
 	export PATH=/path/to/bedtools/binary:$PATH
 	export PATH=/path/to/clustalo/binary:$PATH
 	```
@@ -37,20 +37,20 @@ mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
 2. Download the amino acid sequences of the TFs in the species of interest from online databases, e.g. SGD for yeast or FlyBase for fruit fly. Alternatively, query the sequences in CIS-BP database for a species, e.g. Saccharomyces_cerevisiae or Drosophila_melanogaster. 
 
 	```
-	python CODE/query_cisbp_tf_seqs.py -s <species> -o DATA/<species>.tf_aa_seq.fasta
+	$ python CODE/query_cisbp_tf_seqs.py -s <species> -o DATA/<species>.tf_aa_seq.fasta
 	```
 
 	If you prefer to use DBDs directly from CIS-BP database, enable flag `--get_cisbp_dbds`. Then you may jump to Step 4 without searching for conserved domains.
 
 	```
-	python CODE/query_cisbp_tf_seqs.py -s <species> -o DATA/<species>.dbd.fasta --get_cisbp_dbds
+	$ python CODE/query_cisbp_tf_seqs.py -s <species> -o DATA/<species>.dbd.fasta --get_cisbp_dbds
 	```
 
 3. Upload `<species>.tf_aa_seq.fasta` to NCBI CD-Search Tool, https://www.ncbi.nlm.nih.gov/Structure/bwrpsb/bwrpsb.cgi, and submit a job (with default settings) to search for the conserved DBDs. When the search completes, download the domain hits + concise data mode and save as `<species>.dbd_hitdata.txt`. Now use bedtools to parse out the DBD sequences.
 
 	```
-	python CODE/convert_hitdata2bed.py -i DATA/<species>.dbd_hitdata.txt -o DATA/<species>.dbd_hitdata.bed
-	bedtools getfasta -fi DATA/<species>.tf_aa_seq.fasta -bed DATA/<species>.dbd_hitdata.bed -fo DATA/<species>.dbd.fasta
+	$ python CODE/convert_hitdata2bed.py -i DATA/<species>.dbd_hitdata.txt -o DATA/<species>.dbd_hitdata.bed
+	$ bedtools getfasta -fi DATA/<species>.tf_aa_seq.fasta -bed DATA/<species>.dbd_hitdata.bed -fo DATA/<species>.dbd.fasta
 	```
 
 4. Calculate the pairwised DBD percent identity between two proteins. The maximal percent identity of all DBD-DBD pairs is the score of each protein-protein pair. 
@@ -58,19 +58,19 @@ mysql -u username -p cisbp_1_02 < cisbp_1.02.proteins.sql
 	If SLURM is available for protein-level parallelization, run
 
 	```
-	sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid_parallel.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
+	$ sbatch --array=1-<num_proteins>%32 CODE/run_compt_dbd_pid_parallel.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
 	```
 	
 	Otherwise, run serial processing
 
 	```
-	bash CODE/run_compt_dbd_pid_serial.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
+	$ bash CODE/run_compt_dbd_pid_serial.sh <protein_list> DATA/<species>.dbd.fasta DATA/<output_dirpath>
 	```
 
 5. If there exists an mapping from protein names to TF-encoding gene names, execute the following. It also handles the case the multi-protein to TF mapping by taking the maximal percent identity score. It saves new TF score files and purges the protein score files.
 
 	```
-	python CODE/map_proteins2tf.py -f <protein2TF_filepath> -o DATA/<output_dirpath> --purge_protein_score_files
+	$ python CODE/map_proteins2tf.py -f <protein2TF_filepath> -o DATA/<output_dirpath> --purge_protein_score_files
 	```
 
 ### DESCRIPTION OF RESOURCE FILES
